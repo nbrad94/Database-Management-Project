@@ -1,0 +1,214 @@
+--DROP TABLES
+
+Drop table CUSTOMER cascade constraints;
+Drop table ITEM cascade constraints;
+Drop table SALES cascade constraints;
+Drop table SHIPPING cascade constraints;
+Drop table STOCK cascade constraints;
+Drop table WAREHOUSE cascade constraints;
+
+--PURGE RECYCLEBIN
+
+Purge RecycleBin; 
+
+--Project Title: Shipping Networks for Customer Distribution Network
+--Course Number: ISMG 6080 Database Management
+--Semester/Year: Spring 2022
+--Group Number: 10
+--Name: Nathan Bradley
+--Oracle Account UserID: ORAPRJ27
+
+CREATE TABLE WAREHOUSE (
+	WarehouseID Number(4),
+	WarehouseCode VarChar2(3),
+	WarehouseName VarChar2(30),
+	Address VarChar2(30),
+	City VarChar2(15),
+	State VarChar2(2),
+	ZIP Number(5),
+	CONSTRAINT Warehouse_WarehouseID_pk PRIMARY KEY (WarehouseID));
+
+INSERT INTO WAREHOUSE VALUES (1001,'LBC','Long Beach Warehouse','1121 Pacific Coast Hwy','Long Beach','CA',90806);
+INSERT INTO WAREHOUSE VALUES (1002,'NYC','New York Warehouse','800 Stone St','New York City','NY',10004);
+INSERT INTO WAREHOUSE VALUES (1003,'POR','Portland Warehouse','611 SW Kingston Ave','Portland','OR',97205);
+INSERT INTO WAREHOUSE VALUES (1004,'DEN','Denver Warehouse','4200 High Street','Denver','CO',80228);
+INSERT INTO WAREHOUSE VALUES (1005,'CHI','Chicago Party Zone','1234 Chicago Dog Way','Chicago','IL',60007);
+
+--Warehouse Table, PK=WarehouseID, FK=None
+
+CREATE TABLE CUSTOMER (
+	CustomerID Number(5),
+	FirstName VarChar2(15),
+	LastName VarChar2(15),
+	Address VarChar2(30),
+	City VarChar2(15),
+	State VarChar2(5),
+	ZIP Number(5),
+	CONSTRAINT Cust_CustID_pk PRIMARY KEY (CustomerID));
+
+INSERT INTO CUSTOMER VALUES (10001,'Beth','Bell','4462 East Bethleham Rd','San Diego','CA',22400);
+INSERT INTO CUSTOMER VALUES (10002,'Aaron','Aaronson','5555 In N Out Lane','Buffalo','NY',14201);
+INSERT INTO CUSTOMER VALUES (10003,'Karl','Marx','4053 Proletariat Parkway ','Bend','OR',97701);
+INSERT INTO CUSTOMER VALUES (10004,'Jeff ','Bezos','9867 Amazon Boulevard','Thornton','CO',80241);
+INSERT INTO CUSTOMER VALUES (10005,'Christopher','Wallace','7589 Big Poppa Drive','Bloomington','IL',61710);
+
+--Customer Table, PK=CustomerID, FK=None
+
+CREATE TABLE ITEM (
+	ItemCode Number(4),
+	SerialNumber VarChar2(11),
+	ItemType VarChar2 (35),
+	ItemWeight Number(2),
+	ItemCost Number(4),
+	CONSTRAINT Item_Code_pk	PRIMARY KEY (ItemCode));
+	
+
+INSERT INTO ITEM VALUES (4001,'9PF-QR4-O4M','Metal Frame',5,10.10);
+INSERT INTO ITEM VALUES (4002,'YMU-1LW-RII','Laptop',1,1000.00);
+INSERT INTO ITEM VALUES (4003,'EFZ-5DJ-99P','LCD Television',15,833.33);
+INSERT INTO ITEM VALUES (4004,'4KF-MLN-I7R','Gaming System',4,450);
+INSERT INTO ITEM VALUES (4005,'1BY-CGP-PGP','Computer Screen Cleaning Wipes',0.5,1.67);
+INSERT INTO ITEM VALUES (4006,'0RM-DF3-O6C','Mouse',0.5,15.00);
+INSERT INTO ITEM VALUES (4007,'5J8-91J-8A2','Computer Charging Cable',0.5,8.33);
+INSERT INTO ITEM VALUES (4008,'3N1-WNB-R7X','Computer Monitor',2,46.25);
+INSERT INTO ITEM VALUES (4009,'P3D-IFT-FTY','Headphones',0.5,22.84);
+INSERT INTO ITEM VALUES (4010,'WRY-F2O-64C','E Reader',1,362.50);
+INSERT INTO ITEM VALUES (4011,'63M-GH3-P22','External Hard Drive',0.5,400.00);
+INSERT INTO ITEM VALUES (4012,'9KL-U2C-E7M','Tablet',1,650.00);
+
+--Item Table, PK=ItemCode, FK=None
+
+CREATE TABLE SALES (
+	SaleID Number(6),
+	SaleRevenue Number(4),
+	QuantitySold Number(2),
+	SaleDate Date,
+	CONSTRAINT Sale_SaleID_pk PRIMARY KEY (SaleID));
+	
+INSERT INTO SALES VALUES (550001,101.00,10,'26-JAN-2021');
+INSERT INTO SALES VALUES (550002,5000.00,5,'5-MAR-2021');
+INSERT INTO SALES VALUES (550003,2500.00,3,'5-JUL-2021');
+INSERT INTO SALES VALUES (550004,450.00,1,'6-AUG-2021');
+INSERT INTO SALES VALUES (550005,20.00,12,'30-JUL-2021');
+INSERT INTO SALES VALUES (550006,300.00,20,'24-AUG-2021');
+INSERT INTO SALES VALUES (550007,25.00,3,'20-SEP-2021');
+INSERT INTO SALES VALUES (550008,185.00,4,'15-OCT-2021');
+INSERT INTO SALES VALUES (550009,159.85,7,'12-NOV-2021');
+INSERT INTO SALES VALUES (550010,4350.00,12,'3-DEC-2021');
+INSERT INTO SALES VALUES (550011,800.00,2,'14-FEB-2021');
+INSERT INTO SALES VALUES (550012,650.00,1,'13-MAR-2021');
+
+--Sales Table, PK=SaleID, FK=None
+
+CREATE TABLE SHIPPING (
+	NetworkID Number(5),
+	DepartureEntity VarChar2(30),
+	DepartureDate Date,
+	ArrivalEntity VarChar2(30),
+	ArrivalDate Date,
+	WarehouseID Number(4),
+	CustomerID Number(5),
+	SaleID Number(6),
+	CONSTRAINT Shipping_Warehouse_fk FOREIGN KEY (WarehouseID) REFERENCES WAREHOUSE (WarehouseID),
+	CONSTRAINT Shipping_Customer_fk FOREIGN KEY (CustomerID) REFERENCES CUSTOMER (CustomerID),
+	CONSTRAINT Shipping_Sales_fk FOREIGN KEY (SaleID) REFERENCES SALES (SaleID),
+	CONSTRAINT Shipping_Network_pk PRIMARY KEY (NetworkID));
+
+INSERT INTO SHIPPING VALUES (50001,'Long Beach Warehouse','26-JAN-2021','Beth Bell','30-JAN-2021',1001,10001,550001);
+INSERT INTO SHIPPING VALUES (50002,'Portland Warehouse','5-MAR-2021','Karl Marx','12-MAR-2021',1003,10003,550002);
+INSERT INTO SHIPPING VALUES (50003,'Denver Warehouse','5-JUL-2021','Jeff Bezos','15-JUL-2021',1004,10004,550003);
+INSERT INTO SHIPPING VALUES (50004,'Long Beach Warehouse','6-AUG-2021','Beth Bell','10-AUG-2021',1001,10001,550004);
+INSERT INTO SHIPPING VALUES (50005,'New York Warehouse','30-JUL-2021','Christopher Wallace','4-AUG-2021',1002,10005,550005);
+INSERT INTO SHIPPING VALUES (50006,'Chicago Party Zone','24-AUG-2021','Jeff Bezos','30-AUG-2021',1005,10004,550006);
+INSERT INTO SHIPPING VALUES (50007,'New York Warehouse','20-SEP-2021','Aaron Aaronson','27-SEP-2021',1002,10002,550007);
+INSERT INTO SHIPPING VALUES (50008,'Portland Warehouse','15-OCT-2021','Beth Bell','20-OCT-2021',1003,10001,550008);
+INSERT INTO SHIPPING VALUES (50009,'Long Beach Warehouse','12-NOV-2021','Christopher Wallace','18-NOV-2021',1001,10005,550009);
+INSERT INTO SHIPPING VALUES (50010,'New York Warehouse','3-DEC-2021','Jeff Bezos','10-DEC-2021',1002,10004,550010);
+INSERT INTO SHIPPING VALUES (50011,'Chicago Party Zone','14-FEB-2021','Karl Marx','20-FEB-2021',1005,10003,550011);
+INSERT INTO SHIPPING VALUES (50012,'Long Beach Warehouse','13-MAR-2021','Karl Marx','20-MAR-2021',1001,10003,550012); 
+
+--Shipping Table, PK=NetworkID, FK=WarehouseID, CustomerID, SaleID
+
+CREATE TABLE STOCK (
+	StockID Number(4),
+	Quantity Number(3),
+    ItemDescription VarChar2 (35),
+	ItemCode Number(4),
+	WarehouseID Number(4),
+	CONSTRAINT Stock_Item_fk FOREIGN KEY (ItemCode) REFERENCES ITEM (ItemCode),
+	CONSTRAINT Stock_Warehouse_fk FOREIGN KEY (WarehouseID) REFERENCES WAREHOUSE (WarehouseID),
+	CONSTRAINT Stock_StockID_pk PRIMARY KEY (StockID));
+
+INSERT INTO STOCK VALUES (2001,15,'Metal Frame',4001,1001);
+INSERT INTO STOCK VALUES (2002,20,'Laptop',4002,1003);
+INSERT INTO STOCK VALUES (2003,30,'LCD Television',4003,1004);
+INSERT INTO STOCK VALUES (2004,25,'Gaming System',4004,1001);
+INSERT INTO STOCK VALUES (2005,10,'Computer Screen Cleaning Wipes',4005,1002);
+INSERT INTO STOCK VALUES (2006,15,'Mouse',4006,1005);
+INSERT INTO STOCK VALUES (2007,60,'Computer Charging Cable',4007,1002);
+INSERT INTO STOCK VALUES (2008,50,'Computer Monitor',4008,1005);
+INSERT INTO STOCK VALUES (2009,100,'Headphones',4009,1003);
+INSERT INTO STOCK VALUES (2010,250,'E Reader',4010,1004);
+INSERT INTO STOCK VALUES (2011,45,'External Hard Drive',4011,1001);
+INSERT INTO STOCK VALUES (2012,35,'Tablet',4012,1002);
+
+--Stock Table, PK=StockID, FK=ItemCode, WarehouseID
+
+
+commit; --commit so all inserted data are saved.
+
+--q1 What is the sales revenues for all customers with B in their name?
+select salerevenue
+from sales inner join shipping on (sales.saleid=shipping.saleid)
+where arrivalentity like '%B%';
+
+--q2 What is the customer name who's items are being shipped from the Denver warehouse?
+select firstname, lastname
+from customer inner join shipping on (customer.customerid=shipping.customerid)
+where upper(departureentity) like '%DENVER%';
+
+--q3 What is the maximum sale revenue for a single sale?
+select max(salerevenue)
+from sales;
+
+--q4 What is the average cost of all items?
+select avg(itemcost)
+from item;
+
+--q5 What is the average sale revenue for each warehouse?
+select departureentity, avg(salerevenue)
+from sales inner join shipping on (sales.saleid=shipping.saleid)
+group by departureentity;
+
+--q6 Which customers had packages arrive after sale #550007 had been delivered?
+select arrivalentity
+from shipping
+where arrivaldate > (select arrivaldate
+                    from shipping
+                    where saleid=550007);
+
+--q7 Which warehouses sent packages before sale #550010 had been shipped?                  
+select departureentity
+from shipping 
+where departuredate < (select departuredate
+                        from shipping 
+                        where saleid=550010);
+
+--q8 Which customers produced sales revenues greater than $200 and had items come from all warehouses that weren't the Long Beach location? 
+select arrivalentity, sum(salerevenue)
+from sales inner join shipping on (sales.saleid=shipping.saleid)
+where upper(departureentity) not like '%LONG BEACH%'
+group by arrivalentity
+having sum(salerevenue) > 200
+order by sum(salerevenue);
+
+--q9 Which customers had packages arrive after April 15, 2021?
+select arrivalentity
+from shipping
+where arrivaldate > '15-APR-21'
+group by arrivalentity;
+
+--q10 Which items cost more than $450?
+select itemtype
+from item
+where itemcost > 450;
